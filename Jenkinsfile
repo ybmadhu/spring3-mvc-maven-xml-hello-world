@@ -5,6 +5,7 @@ pipeline {
     tools {
         // Note: this should match with the tool name configured in your jenkins instance (JENKINS_URL/configureTools/)
         maven "MVN_HOME"
+        
     }
     environment {
         // This can be nexus3 or nexus2
@@ -32,7 +33,7 @@ pipeline {
                 script {
                     // If you are using Windows then you should use "bat" step
                     // Since unit testing is out of the scope we skip them
-                    sh (/${MAVEN_HOME} -Dmaven.test.failure.ignore clean package/)
+                    sh "/usr/share/maven/bin/mvn -Dmaven.test.failure.ignore clean package/"
                 }
             }
         }
