@@ -33,7 +33,7 @@ pipeline {
                 script {
                     // If you are using Windows then you should use "bat" step
                     // Since unit testing is out of the scope we skip them
-                    sh "/usr/share/maven/bin/mvn -Dmaven.test.failure.ignore clean package"
+                    sh '/usr/share/maven/bin/mvn -Dmaven.test.failure.ignore clean package'
                 }
             }
         }
