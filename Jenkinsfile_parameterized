@@ -3,11 +3,8 @@ pipeline {
     agent any
  
     parameters {
-        choice(name: 'environment',
-            choices: 'Dev\nTest\nPro',
-            description: 'What environment do you choose?')
-       
-        booleanParam(defaultValue: false, description: '', name: 'clone_code')
+    gitParameter branchFilter: 'origin/(.*)', defaultValue: 'origin/master', name: 'BRANCH', type: 'PT_BRANCH'
+         
         booleanParam(defaultValue: false, description: '', name: 'mvn_build')
         booleanParam(defaultValue: false, description: '', name: 'publish_to_nexus')
   
@@ -33,12 +30,10 @@ pipeline {
         stage("clone code") {
             steps {
                 script {
-                    if (params.clone_code) {
+                    
 				    // Let's clone the source
-                    git 'https://github.com/betawins/spring3-mvc-maven-xml-hello-world-1.git';
-                    } else {
-                                echo "no build"
-                            }
+                    git branch: "${params.BRANCH}", url: 'https://github.com/betawins/parametirize-job.git';
+                   
                 } 
             }
         }
