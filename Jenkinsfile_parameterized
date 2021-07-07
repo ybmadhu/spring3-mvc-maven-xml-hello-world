@@ -1,6 +1,13 @@
 pipeline {
-    agent {
-        label "master"
+ 
+    agent any
+ 
+    parameters {
+    gitParameter branchFilter: 'origin/(.*)', defaultValue: 'origin/master', name: 'BRANCH', type: 'PT_BRANCH'
+         
+        booleanParam(defaultValue: false, description: '', name: 'mvn_build')
+        booleanParam(defaultValue: false, description: '', name: 'publish_to_nexus')
+  
     }
     tools {
         // Note: this should match with the tool name configured in your jenkins instance (JENKINS_URL/configureTools/)
@@ -13,7 +20,7 @@ pipeline {
         // This can be http or https
         NEXUS_PROTOCOL = "http"
         // Where your Nexus is running
-        NEXUS_URL = "13.234.239.106:8081/"
+        NEXUS_URL = "13.233.66.167:8081/"
         // Repository where we will upload the artifact
         NEXUS_REPOSITORY = "ncodeit-helloworld"
         // Jenkins credential id to authenticate to Nexus OSS
@@ -23,23 +30,30 @@ pipeline {
         stage("clone code") {
             steps {
                 script {
-                    // Let's clone the source
-                    git 'https://github.com/betawins/spring3-mvc-maven-xml-hello-world-1.git';
-                }
+                    
+				    // Let's clone the source
+                    git branch: "${params.BRANCH}", url: 'https://github.com/betawins/parametirize-job.git';
+                   
+                } 
             }
         }
         stage("mvn build") {
             steps {
                 script {
+				if (params.mvn_build) {
                     // If you are using Windows then you should use "bat" step
                     // Since unit testing is out of the scope we skip them
                     sh '/usr/share/maven/bin/mvn -Dmaven.test.failure.ignore clean package'
+					} else {
+                                echo "no build"
+                            }
                 }
             }
         }
         stage("publish to nexus") {
             steps {
                 script {
+				if (params.publish_to_nexus) {
                     // Read POM xml file using 'readMavenPom' step , this step 'readMavenPom' is included in: https://plugins.jenkins.io/pipeline-utility-steps
                     pom = readMavenPom file: "pom.xml";
                     // Find built artifact under target folder
@@ -76,6 +90,9 @@ pipeline {
                     } else {
                         error "*** File: ${artifactPath}, could not be found";
                     }
+					} else {
+                                echo "no build"
+                            }
                 }
             }
         }
